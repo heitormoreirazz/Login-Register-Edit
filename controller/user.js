@@ -26,24 +26,47 @@ const registrarUsu = async (req, res) => {
     }
 };
 
-const loginUsuario = async (email, senha) => {
-    const query = "SELECT * FROM usuario WHERE email = $1";
-    const values = [email];
-    const result = await connection.query(query, values);
+const loginUsuario = async (req, res) => {
+    const { email, senha } = req.body;
+    try {
+        const query = "SELECT * FROM usuario WHERE email = $1";
+        const values = [email];
+        const result = await connection.query(query, values);
 
-    if (result.rows.length === 0) {
-        throw new Error("Usuário não encontrado");
+        if (result.rows.length === 0) {
+            console.log("Usuário não encontrado");
+            res.redirect("/login");
+            return;
+        }
+
+        const usuario = result.rows[0];
+        const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
+
+        if (!senhaCorreta) {
+            console.log("Senha incorreta");
+            res.redirect("/login");
+            return;
+        }
+        req.session.nome = usuario.nome;
+        req.session.sobrenome = usuario.sobrenome;
+        req.session.logrado = usuario.logradouro;
+        req.session.numero = usuario.numero;
+        req.session.complemento = usuario.complemento;
+        req.session.bairro = usuario.bairro;
+        req.session.cidade = usuario.cidade;
+        req.session.estado = usuario.estado;
+        req.session.userId = usuario.id;
+        req.session.email = usuario.email;
+
+        console.log("Login bem-sucedido!");
+        res.redirect("/profile");
+    } catch (error) {
+        console.error("Erro ao fazer login:", error);
+        res.redirect("/login");
     }
+};
 
-    const usuario = result.rows[0];
-    const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
 
-    if (!senhaCorreta) {
-        throw new Error("Senha incorreta");
-    }
-
-    return usuario;
-}
 
 module.exports = {
     registrarUsu,

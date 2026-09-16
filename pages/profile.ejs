@@ -1,423 +1,427 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Meu Perfil</title>
-    <style>
-      :root {
-        --bg: #f3f6fb;
-        --card: #ffffff;
-        --primary: #2f6fed;
-        --primary-dark: #1d4fc8;
-        --muted: #6b7280;
-        --border: #e5e7eb;
-        --text: #1f2937;
-        --success: #10b981;
-        --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-      }
 
-      * {
-        box-sizing: border-box;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meu Perfil</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --primary: #2f6fed;
+      --primary-dark: #1d4fc8;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --text: #1f2937;
+      --success: #10b981;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
 
-      body {
-        margin: 0;
-        font-family: Arial, Helvetica, sans-serif;
-        background: var(--bg);
-        color: var(--text);
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #12263f 0%, #1f3a5f 100%);
+      color: #fff;
+      padding: 28px 20px;
+    }
+
+    .brand {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 32px;
+      letter-spacing: 0.5px;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      transition: 0.2s ease;
+    }
+
+    .nav a.active,
+    .nav a:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .content {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .topbar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 22px;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.25rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 12px;
+      font-size: 0.96rem;
+      background: #fff;
+      color: var(--text);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid rgba(47, 111, 237, 0.15);
+      border-color: var(--primary);
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn-secondary {
+      background: #eef2ff;
+      color: var(--primary-dark);
+    }
+
+    .profile-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.3rem;
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ecfdf5;
+      color: #047857;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .status::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .meta {
+      width: 100%;
+      margin-top: 16px;
+    }
+
+    .meta-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .meta-item strong {
+      color: var(--text);
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
       }
 
       .page {
-        display: flex;
-        min-height: 100vh;
+        flex-direction: column;
       }
 
       .sidebar {
-        width: 260px;
-        background: linear-gradient(180deg, #12263f 0%, #1f3a5f 100%);
-        color: #fff;
-        padding: 28px 20px;
+        width: 100%;
       }
+    }
 
-      .brand {
-        font-size: 1.6rem;
-        font-weight: 700;
-        margin-bottom: 32px;
-        letter-spacing: 0.5px;
-      }
-
-      .nav {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .nav a {
-        color: rgba(255, 255, 255, 0.8);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 14px;
-        border-radius: 10px;
-        transition: 0.2s ease;
-      }
-
-      .nav a.active,
-      .nav a:hover {
-        background: rgba(255, 255, 255, 0.08);
-        color: #fff;
+    @media (max-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr;
       }
 
       .content {
-        flex: 1;
-        padding: 30px;
+        padding: 18px;
       }
 
       .topbar {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 18px 22px;
-        box-shadow: var(--shadow);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
-      }
-
-      .topbar h1 {
-        margin: 0;
-        font-size: 1.8rem;
-      }
-
-      .btn {
-        border: none;
-        border-radius: 10px;
-        padding: 12px 18px;
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: 0.2s ease;
-      }
-
-      .btn-primary {
-        background: var(--primary);
-        color: #fff;
-      }
-
-      .btn-primary:hover {
-        background: var(--primary-dark);
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        gap: 24px;
-      }
-
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        box-shadow: var(--shadow);
-        padding: 24px;
-      }
-
-      .card h2 {
-        margin-top: 0;
-        font-size: 1.25rem;
-      }
-
-      .form-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 18px;
-      }
-
-      .field {
-        display: flex;
         flex-direction: column;
-        gap: 8px;
-      }
-
-      .field.full {
-        grid-column: 1 / -1;
-      }
-
-      label {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--text);
-      }
-
-      input,
-      select,
-      textarea {
-        width: 100%;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 11px 12px;
-        font-size: 0.96rem;
-        background: #fff;
-        color: var(--text);
-      }
-
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: 2px solid rgba(47, 111, 237, 0.15);
-        border-color: var(--primary);
-      }
-
-      textarea {
-        min-height: 110px;
-        resize: vertical;
-      }
-
-      .actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        margin-top: 24px;
-      }
-
-      .btn-secondary {
-        background: #eef2ff;
-        color: var(--primary-dark);
-      }
-
-      .profile-box {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+        align-items: flex-start;
         gap: 12px;
       }
+    }
+  </style>
+</head>
 
-      .avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.3rem;
-        color: var(--primary-dark);
-        font-weight: 700;
-      }
+<body>
+  <div class="page">
+    <aside class="sidebar">
+      <div class="brand">Minha Conta</div>
 
-      .status {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: #ecfdf5;
-        color: #047857;
-        border-radius: 999px;
-        padding: 7px 12px;
-        font-size: 0.8rem;
-        font-weight: 700;
-      }
+      <nav class="nav">
+        <a href="#" class="active">Perfil</a>
+        <a href="#">Segurança</a>
+        <a href="#">Notificações</a>
+        <a href="#">Pagamentos</a>
+        <a href="#">Endereços</a>
+        <a href="#">Sair</a>
+      </nav>
+    </aside>
 
-      .status::before {
-        content: "";
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--success);
-      }
+    <main class="content">
+      <div class="topbar">
+        <h1>Editar perfil</h1>
+        <button class="btn btn-primary">Salvar alterações</button>
+      </div>
 
-      .meta {
-        width: 100%;
-        margin-top: 16px;
-      }
-
-      .meta-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 12px 0;
-        border-bottom: 1px solid var(--border);
-        color: var(--muted);
-      }
-
-      .meta-item strong {
-        color: var(--text);
-      }
-
-      @media (max-width: 900px) {
-        .grid {
-          grid-template-columns: 1fr;
-        }
-
-        .page {
-          flex-direction: column;
-        }
-
-        .sidebar {
-          width: 100%;
-        }
-      }
-
-      @media (max-width: 640px) {
-        .form-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .content {
-          padding: 18px;
-        }
-
-        .topbar {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 12px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="page">
-      <aside class="sidebar">
-        <div class="brand">Minha Conta</div>
-
-        <nav class="nav">
-          <a href="#" class="active">Perfil</a>
-          <a href="#">Segurança</a>
-          <a href="#">Notificações</a>
-          <a href="#">Pagamentos</a>
-          <a href="#">Endereços</a>
-          <a href="#">Sair</a>
-        </nav>
-      </aside>
-
-      <main class="content">
-        <div class="topbar">
-          <h1>Editar perfil</h1>
-          <button class="btn btn-primary">Salvar alterações</button>
-        </div>
-
-        <div class="grid">
-          <section class="card">
-            <h2>Informações pessoais</h2>
-
-            <form>
-              <div class="form-grid">
-                <div class="field">
-                  <label for="nome">Nome</label>
-                  <input id="nome" type="text" value="Maria" />
-                </div>
-
-                <div class="field">
-                  <label for="sobrenome">Sobrenome</label>
-                  <input id="sobrenome" type="text" value="Silva" />
-                </div>
-
-                <div class="field full">
-                  <label for="email">E-mail</label>
-                  <input id="email" type="email" value="maria@email.com" />
-                </div>
-
-                <div class="field">
-                  <label for="telefone">Telefone</label>
-                  <input id="telefone" type="tel" value="(11) 99999-1234" />
-                </div>
-
-                <div class="field">
-                  <label for="cpf">CPF</label>
-                  <input id="cpf" type="text" value="123.456.789-00" />
-                </div>
-
-                <div class="field">
-                  <label for="senha">Senha</label>
-                  <input id="senha" type="password" value="********" />
-                </div>
-
-                <div class="field">
-                  <label for="confirmarSenha">Confirmar senha</label>
-                  <input id="confirmarSenha" type="password" value="********" />
-                </div>
-
-                <div class="field full">
-                  <label for="bio">Bio</label>
-                  <textarea id="bio">Gerente de produtos com foco em experiência do cliente e melhoria contínua.</textarea>
-                </div>
-              </div>
-
-              <div class="actions">
-                <button type="button" class="btn btn-secondary">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Salvar perfil</button>
-              </div>
-            </form>
-          </section>
-
-          <aside class="card">
-            <div class="profile-box">
-              <div class="avatar">MS</div>
-              <h2>Maria Silva</h2>
-              <span class="status">Ativa agora</span>
-            </div>
-
-            <div class="meta">
-              <div class="meta-item">
-                <span>Tipo de conta</span>
-                <strong>Premium</strong>
-              </div>
-              <div class="meta-item">
-                <span>Último acesso</span>
-                <strong>Hoje, 09:45</strong>
-              </div>
-              <div class="meta-item">
-                <span>País</span>
-                <strong>Brasil</strong>
-              </div>
-            </div>
-          </aside>
-        </div>
-
-        <div class="card" style="margin-top: 24px;">
-          <h2>Endereço</h2>
+      <div class="grid">
+        <section class="card">
+          <h2>Informações pessoais</h2>
 
           <form>
             <div class="form-grid">
+              <div class="field">
+                <label for="nome">Nome</label>
+                <input id="nome" type="text" value="Maria" />
+              </div>
+
+              <div class="field">
+                <label for="sobrenome">Sobrenome</label>
+                <input id="sobrenome" type="text" value="Silva" />
+              </div>
+
               <div class="field full">
-                <label for="rua">Rua</label>
-                <input id="rua" type="text" value="Avenida Paulista, 1234" />
+                <label for="email">E-mail</label>
+                <input id="email" type="email" value="maria@email.com" />
               </div>
 
               <div class="field">
-                <label for="cidade">Cidade</label>
-                <input id="cidade" type="text" value="São Paulo" />
+                <label for="telefone">Telefone</label>
+                <input id="telefone" type="tel" value="(11) 99999-1234" />
               </div>
 
               <div class="field">
-                <label for="estado">Estado</label>
-                <select id="estado">
-                  <option selected>SP</option>
-                  <option>RJ</option>
-                  <option>MG</option>
-                  <option>RS</option>
-                </select>
+                <label for="cpf">CPF</label>
+                <input id="cpf" type="text" value="123.456.789-00" />
               </div>
 
               <div class="field">
-                <label for="cep">CEP</label>
-                <input id="cep" type="text" value="01310-100" />
+                <label for="senha">Senha</label>
+                <input id="senha" type="password" value="********" />
               </div>
 
               <div class="field">
-                <label for="pais">País</label>
-                <input id="pais" type="text" value="Brasil" />
+                <label for="confirmarSenha">Confirmar senha</label>
+                <input id="confirmarSenha" type="password" value="********" />
+              </div>
+
+              <div class="field full">
+                <label for="bio">Bio</label>
+                <textarea
+                  id="bio">Gerente de produtos com foco em experiência do cliente e melhoria contínua.</textarea>
               </div>
             </div>
 
             <div class="actions">
               <button type="button" class="btn btn-secondary">Cancelar</button>
-              <button type="submit" class="btn btn-primary">Salvar endereço</button>
+              <button type="submit" class="btn btn-primary">Salvar perfil</button>
             </div>
           </form>
-        </div>
-      </main>
-    </div>
-  </body>
+        </section>
+
+        <aside class="card">
+          <div class="profile-box">
+            <div class="avatar">MS</div>
+            <h2>Maria Silva</h2>
+            <span class="status">Ativa agora</span>
+          </div>
+
+          <div class="meta">
+            <div class="meta-item">
+              <span>Tipo de conta</span>
+              <strong>Premium</strong>
+            </div>
+            <div class="meta-item">
+              <span>Último acesso</span>
+              <strong>Hoje, 09:45</strong>
+            </div>
+            <div class="meta-item">
+              <span>País</span>
+              <strong>Brasil</strong>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="card" style="margin-top: 24px;">
+        <h2>Endereço</h2>
+
+        <form>
+          <div class="form-grid">
+            <div class="field full">
+              <label for="rua">Rua</label>
+              <input id="rua" type="text" value="Avenida Paulista, 1234" />
+            </div>
+
+            <div class="field">
+              <label for="cidade">Cidade</label>
+              <input id="cidade" type="text" value="São Paulo" />
+            </div>
+
+            <div class="field">
+              <label for="estado">Estado</label>
+              <select id="estado">
+                <option selected>SP</option>
+                <option>RJ</option>
+                <option>MG</option>
+                <option>RS</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="cep">CEP</label>
+              <input id="cep" type="text" value="01310-100" />
+            </div>
+
+            <div class="field">
+              <label for="pais">País</label>
+              <input id="pais" type="text" value="Brasil" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn btn-secondary">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Salvar endereço</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</body>
+
 </html>
