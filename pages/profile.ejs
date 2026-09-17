@@ -279,9 +279,9 @@
 </head>
 
 <body>
-  <div class="page">
+  <main class="page">
     <aside class="sidebar">
-      <div class="brand">Minha Conta</div>
+      <section class="brand">Minha Conta</section>
 
       <nav class="nav">
         <a href="#" class="active">Perfil</a>
@@ -294,134 +294,134 @@
     </aside>
 
     <main class="content">
-      <div class="topbar">
+      <section class="topbar">
         <h1>Editar perfil</h1>
         <button class="btn btn-primary">Salvar alterações</button>
-      </div>
+      </section>
 
-      <div class="grid">
+      <section class="grid">
         <section class="card">
           <h2>Informações pessoais</h2>
 
           <form>
-            <div class="form-grid">
-              <div class="field">
+            <section class="form-grid">
+              <section class="field">
                 <label for="nome">Nome</label>
-                <input id="nome" type="text" value="Maria" />
-              </div>
+                <input id="nome" type="text" value="<%= nome %>" />
+              </section>
 
-              <div class="field">
+              <section class="field">
                 <label for="sobrenome">Sobrenome</label>
-                <input id="sobrenome" type="text" value="Silva" />
-              </div>
+                <input id="sobrenome" type="text" value="<%= sobrenome %>" />
+              </section>
 
-              <div class="field full">
+              <section class="field full">
                 <label for="email">E-mail</label>
-                <input id="email" type="email" value="maria@email.com" />
-              </div>
+                <input id="email" type="email" value="<%= email %>" />
+              </section>
 
-              <div class="field">
+              <section class="field">
                 <label for="telefone">Telefone</label>
                 <input id="telefone" type="tel" value="(11) 99999-1234" />
-              </div>
+              </section>
 
-              <div class="field">
+              <section class="field">
                 <label for="cpf">CPF</label>
                 <input id="cpf" type="text" value="123.456.789-00" />
-              </div>
+              </section>
 
-              <div class="field">
+              <section class="field">
                 <label for="senha">Senha</label>
                 <input id="senha" type="password" value="********" />
-              </div>
+              </section>
 
-              <div class="field">
+              <section class="field">
                 <label for="confirmarSenha">Confirmar senha</label>
                 <input id="confirmarSenha" type="password" value="********" />
-              </div>
+              </section>
 
-              <div class="field full">
+              <section class="field full">
                 <label for="bio">Bio</label>
                 <textarea
                   id="bio">Gerente de produtos com foco em experiência do cliente e melhoria contínua.</textarea>
-              </div>
-            </div>
+              </section>
+            </section>
 
-            <div class="actions">
+            <section class="actions">
               <button type="button" class="btn btn-secondary">Cancelar</button>
               <button type="submit" class="btn btn-primary">Salvar perfil</button>
-            </div>
+            </section>
           </form>
         </section>
 
         <aside class="card">
-          <div class="profile-box">
-            <div class="avatar">MS</div>
-            <h2>Maria Silva</h2>
+          <section class="profile-box">
+            <section class="avatar">MS</section>
+            <h2><%= nome %> <%= sobrenome %></h2>
             <span class="status">Ativa agora</span>
-          </div>
+          </section>
 
-          <div class="meta">
-            <div class="meta-item">
+          <section class="meta">
+            <section class="meta-item">
               <span>Tipo de conta</span>
               <strong>Premium</strong>
-            </div>
-            <div class="meta-item">
+            </section>
+            <section class="meta-item">
               <span>Último acesso</span>
               <strong>Hoje, 09:45</strong>
-            </div>
-            <div class="meta-item">
+            </section>
+            <section class="meta-item">
               <span>País</span>
               <strong>Brasil</strong>
-            </div>
-          </div>
+            </section>
+          </section>
         </aside>
-      </div>
+      </section>
 
-      <div class="card" style="margin-top: 24px;">
+      <section class="card" style="margin-top: 24px;">
         <h2>Endereço</h2>
 
         <form>
-          <div class="form-grid">
-            <div class="field full">
+          <section class="form-grid">
+            <section class="field full">
               <label for="rua">Rua</label>
-              <input id="rua" type="text" value="Avenida Paulista, 1234" />
-            </div>
+                <input id="rua" type="text" value="<%= logradouro %>" />
+            </section>
 
-            <div class="field">
+            <section class="field">
               <label for="cidade">Cidade</label>
-              <input id="cidade" type="text" value="São Paulo" />
-            </div>
+                <input id="cidade" type="text" value="<%= cidade %>" />
+            </section>
 
-            <div class="field">
+            <section class="field">
               <label for="estado">Estado</label>
               <select id="estado">
-                <option selected>SP</option>
+                <option selected><%= estado %></option>
                 <option>RJ</option>
                 <option>MG</option>
                 <option>RS</option>
               </select>
-            </div>
+            </section>
 
-            <div class="field">
+            <section class="field">
               <label for="cep">CEP</label>
               <input id="cep" type="text" value="01310-100" />
-            </div>
+            </section>
 
-            <div class="field">
+            <section class="field">
               <label for="pais">País</label>
               <input id="pais" type="text" value="Brasil" />
-            </div>
-          </div>
+            </section>
+          </section>
 
-          <div class="actions">
+          <section class="actions">
             <button type="button" class="btn btn-secondary">Cancelar</button>
             <button type="submit" class="btn btn-primary">Salvar endereço</button>
-          </div>
+          </section>
         </form>
-      </div>
+      </section>
     </main>
-  </div>
+  </main>
 </body>
 
 </html>

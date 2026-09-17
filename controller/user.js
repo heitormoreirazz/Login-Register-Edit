@@ -49,7 +49,7 @@ const loginUsuario = async (req, res) => {
         }
         req.session.nome = usuario.nome;
         req.session.sobrenome = usuario.sobrenome;
-        req.session.logrado = usuario.logradouro;
+        req.session.logradouro = usuario.logradouro;
         req.session.numero = usuario.numero;
         req.session.complemento = usuario.complemento;
         req.session.bairro = usuario.bairro;

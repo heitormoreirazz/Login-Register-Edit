@@ -23,16 +23,35 @@ router.get("/register", async function (req, res) {
 
 
 router.get("/profile", async function (req, res) {
+    const session = req.session || {};
+
     res.render("pages/profile", {
-        valores: { nome: "", sobrenome: "", email: "", senha: "" },
+        nome: session.nome || "",
+        sobrenome: session.sobrenome || "",
+        email: session.email || "",
+        logradouro: session.logradouro || session.logrado || "",
+        numero: session.numero || "",
+        complemento: session.complemento || "",
+        bairro: session.bairro || "",
+        cidade: session.cidade || "",
+        estado: session.estado || "",
     });
 });
 
 router.post("/fazerRegistro", user.registrarUsu, async function (req, res) { });
 
 router.get("/login", async function (req, res) {
+    const session = req.session || {};
+
     res.render("pages/login", {
-        valores: { email: "", senha: "" },
+        valores: {
+            email: session.email || "",
+            senha: "",
+            login: session.login || false,
+            nome: session.nome || "",
+            sobrenome: session.sobrenome || "",
+            userId: session.userId || null,
+        },
     });
 });
 
