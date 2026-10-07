@@ -1,4 +1,5 @@
 var express = require("express");
+var path = require("path");
 var user = require("./controller/user");
 var router = express.Router();
 const bcrypt = require("bcrypt");
@@ -21,6 +22,9 @@ router.get("/register", async function (req, res) {
     });
 });
 
+router.get("/controller/cepAPI.js", function (req, res) {
+    res.sendFile(path.join(__dirname, "controller", "cepAPI.js"));
+});
 
 router.get("/profile", async function (req, res) {
     const session = req.session || {};
@@ -32,11 +36,19 @@ router.get("/profile", async function (req, res) {
         logradouro: session.logradouro || session.logrado || "",
         numero: session.numero || "",
         complemento: session.complemento || "",
+        cep: session.cep || "",
         bairro: session.bairro || "",
         cidade: session.cidade || "",
         estado: session.estado || "",
+        celular: session.celular || "",
+        CPF: session.CPF || "",
+        bio: session.bio || "",
     });
 });
+
+router.post("/editarEndereco", user.editarEnderecoUsuario);
+
+router.post("/editarInfo", user.editarInfoUsuario);
 
 router.post("/fazerRegistro", user.registrarUsu, async function (req, res) { });
 

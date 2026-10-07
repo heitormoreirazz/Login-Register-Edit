@@ -52,6 +52,7 @@ const loginUsuario = async (req, res) => {
         req.session.logradouro = usuario.logradouro;
         req.session.numero = usuario.numero;
         req.session.complemento = usuario.complemento;
+        req.session.cep = usuario.cep;
         req.session.bairro = usuario.bairro;
         req.session.cidade = usuario.cidade;
         req.session.estado = usuario.estado;
@@ -67,14 +68,24 @@ const loginUsuario = async (req, res) => {
 };
 
 const editarEnderecoUsuario = async (req, res) => {
-    const { logradouro, numero, complemento, bairro, cidade, estado } = req.body;
-    const userId = req.session.userId;
+    const { logradouro, numero, complemento, bairro, cidade, estado, cep } = req.body;
+    const userId = req.session?.userId;
+
+    if (!userId) {
+        return res.redirect("/login");
+    }
 
     try {
-        const query = "UPDATE usuario SET logradouro = $1, numero = $2, complemento = $3, bairro = $4, cidade = $5, estado = $6 WHERE id = $7";
-        const values = [logradouro, numero, complemento, bairro, cidade, estado, userId];
+        const query = "UPDATE usuario SET logradouro = $1, numero = $2, complemento = $3, bairro = $4, cidade = $5, estado = $6, cep = $7 WHERE id = $8";
+        const values = [logradouro, numero, complemento, bairro, cidade, estado, cep, userId];
 
-        await connection.query(query, values);
+        const result = await connection.query(query, values);
+        if (result.rowCount === 0) {
+            console.error("Nenhum usuário encontrado para atualizar o endereço:", userId);
+            return res.redirect("/profile");
+        }
+
+        Object.assign(req.session, { logradouro, numero, complemento, cep, bairro, cidade, estado });
         console.log("Endereço atualizado com sucesso!");
         res.redirect("/profile");
     } catch (error) {
@@ -83,9 +94,38 @@ const editarEnderecoUsuario = async (req, res) => {
     }
 };
 
+const editarInfoUsuario = async (req, res) => {
+    const { nome, sobrenome, email, celular, CPF, bio } = req.body;
+    const userId = req.session?.userId;
+
+    if (!userId) {
+        return res.redirect("/login");
+    }
+
+    try {
+        const query = "UPDATE usuario SET nome = $1, sobrenome = $2, email = $3, celular = $4, CPF = $5, bio = $6 WHERE id = $7";
+        const values = [nome, sobrenome, email, celular, CPF, bio, userId];
+
+        const result = await connection.query(query, values);
+        if (result.rowCount === 0) {
+            console.error("Nenhum usuário encontrado para atualizar as informações:", userId);
+            return res.redirect("/profile");
+        }
+
+        Object.assign(req.session, { nome, sobrenome, email, celular, CPF, bio });
+        console.log("Informações do usuário atualizadas com sucesso!");
+        res.redirect("/profile");
+    } catch (error) {
+        console.error("Erro ao atualizar informações do usuário:", error);
+        res.redirect("/profile");
+    }
+};
+
 
 
 module.exports = {
     registrarUsu,
-    loginUsuario
+    loginUsuario,
+    editarEnderecoUsuario,
+    editarInfoUsuario
 };

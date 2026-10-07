@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="/controller/cepAPI.js" defer></script>
   <title>Meu Perfil</title>
   <style>
     :root {
@@ -313,47 +314,47 @@
         <section class="card">
           <h2>Informações pessoais</h2>
 
-          <form>
+          <form action="/editarInfo" method="POST">
             <section class="form-grid">
               <section class="field">
                 <label for="nome">Nome</label>
-                <input id="nome" type="text" value="<%= nome %>" />
+                <input id="nome" type="text" value="<%= nome %>" name="nome" />
               </section>
 
               <section class="field">
                 <label for="sobrenome">Sobrenome</label>
-                <input id="sobrenome" type="text" value="<%= sobrenome %>" />
+                <input id="sobrenome" type="text" value="<%= sobrenome %>" name="sobrenome" />
               </section>
 
               <section class="field full">
                 <label for="email">E-mail</label>
-                <input id="email" type="email" value="<%= email %>" />
+                <input id="email" type="email" value="<%= email %>" name="email" />
               </section>
 
               <section class="field">
                 <label for="telefone">Telefone</label>
-                <input id="telefone" type="tel" value="(11) 99999-1234" />
+                <input id="telefone" type="tel" value="(11) 99999-1234" name="celular" />
               </section>
 
               <section class="field">
                 <label for="cpf">CPF</label>
-                <input id="cpf" type="text" value="123.456.789-00" />
+                <input id="cpf" type="text" value="123.456.789-00" name="cpf" />
               </section>
 
               <section class="field">
                 <label for="senha">Senha</label>
-                <input id="senha" type="password" value="********" />
+                <input id="senha" type="password" value="********" name="senha" />
               </section>
 
               <section class="field">
                 <label for="confirmarSenha">Confirmar senha</label>
-                <input id="confirmarSenha" type="password" value="********" />
+                <input id="confirmarSenha" type="password" value="********" name="confirmarSenha" />
               </section>
 
               <section class="field full">
                 <label for="bio">Bio</label>
                 <textarea
-                  id="bio">Gerente de produtos com foco em experiência do cliente e melhoria contínua.</textarea>
+                  id="bio" name="bio">Gerente de produtos com foco em experiência do cliente e melhoria contínua.</textarea>
               </section>
             </section>
 
@@ -391,38 +392,48 @@
       <section class="card" style="margin-top: 24px;">
         <h2>Endereço</h2>
 
-        <form>
+        <form action="/editarEndereco" method="POST">
           <section class="form-grid">
             <section class="field full">
               <label for="rua">Rua</label>
-              <input id="rua" type="text" value="<%= logradouro %>" />
+              <input id="rua" name="logradouro" type="text" value="<%= logradouro %>" />
             </section>
 
             <section class="field">
               <label for="bairro">Bairro</label>
-              <input id="bairro" type="text" value="<%= bairro %>" />
+              <input id="bairro" name="bairro" type="text" value="<%= bairro %>" />
+            </section>
+
+            <section class="field">
+              <label for="numero">Número</label>
+              <input id="numero" name="numero" type="text" value="<%= numero %>" />
+            </section>
+
+            <section class="field">
+              <label for="complemento">Complemento</label>
+              <input id="complemento" name="complemento" type="text" value="<%= complemento %>" />
             </section>
 
             <section class="field">
               <label for="cidade">Cidade</label>
-              <input id="cidade" type="text" value="<%= cidade %>" />
+              <input id="cidade" name="cidade" type="text" value="<%= cidade %>" />
             </section>
 
             <section class="field">
               <label for="estado">Estado</label>
-              <input id="estado" type="text" value="<%= estado %>" maxlength="2" />
+              <input id="estado" name="estado" type="text" value="<%= estado %>" maxlength="2" />
             </section>
 
             <section class="field">
               <label for="cep">CEP</label>
-              <input id="cep" type="text" inputmode="numeric" autocomplete="postal-code"
-                maxlength="9" placeholder="00000-000" aria-describedby="cep-status" />
+              <input id="cep" name="cep" type="text" value="<%= cep %>" inputmode="numeric" autocomplete="postal-code"
+                maxlength="9" aria-describedby="cep-status" />
               <small id="cep-status" class="cep-status" role="status" aria-live="polite"></small>
             </section>
 
             <section class="field">
               <label for="pais">País</label>
-              <input id="pais" type="text" value="Brasil" />
+              <input id="pais" name="pais" type="text" value="Brasil" />
             </section>
           </section>
 
@@ -434,76 +445,6 @@
       </section>
     </main>
   </main>
-  <script>
-    (() => {
-      const cepInput = document.getElementById("cep");
-      const status = document.getElementById("cep-status");
-      const addressFields = {
-        rua: document.getElementById("rua"),
-        bairro: document.getElementById("bairro"),
-        cidade: document.getElementById("cidade"),
-        estado: document.getElementById("estado"),
-      };
-      let requestController;
-
-      const updateStatus = (message, state = "") => {
-        status.textContent = message;
-        status.dataset.state = state;
-      };
-
-      cepInput.addEventListener("input", async () => {
-        const cep = cepInput.value.replace(/\D/g, "");
-        requestController?.abort();
-        requestController = undefined;
-        updateStatus("");
-
-        if (cep.length !== 8) {
-          return;
-        }
-
-        const controller = new AbortController();
-        requestController = controller;
-        updateStatus("Buscando endereço...");
-
-        try {
-          const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`, {
-            signal: controller.signal,
-          });
-
-          if (!response.ok) {
-            throw new Error(`A consulta de CEP retornou HTTP ${response.status}`);
-          }
-
-          const endereco = await response.json();
-          if (controller.signal.aborted || cepInput.value.replace(/\D/g, "") !== cep) {
-            return;
-          }
-
-          if (endereco.erro) {
-            updateStatus("CEP não encontrado. Verifique o número informado.", "error");
-            return;
-          }
-
-          addressFields.rua.value = endereco.logradouro || "";
-          addressFields.bairro.value = endereco.bairro || "";
-          addressFields.cidade.value = endereco.localidade || "";
-          addressFields.estado.value = endereco.uf || "";
-          updateStatus("Endereço localizado.");
-        } catch (error) {
-          if (error.name === "AbortError") {
-            return;
-          }
-
-          console.error("Erro ao consultar CEP:", error);
-          updateStatus("Não foi possível consultar o CEP. Tente novamente.", "error");
-        } finally {
-          if (requestController === controller) {
-            requestController = undefined;
-          }
-        }
-      });
-    })();
-  </script>
 </body>
 
 </html>
