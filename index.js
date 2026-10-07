@@ -8,7 +8,7 @@ const router = require('./router');
 dotenv.config();
 
 const app = express();
-const host = process.env.HOST || 'localhost';
+const host = process.env.HOST || '0.0.0.0';
 const port = process.env.PORT || 3000;
 
 app.set('view engine', 'ejs');

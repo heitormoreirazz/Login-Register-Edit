@@ -146,6 +146,16 @@
       grid-column: 1 / -1;
     }
 
+    .cep-status {
+      min-height: 1em;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .cep-status[data-state="error"] {
+      color: #b91c1c;
+    }
+
     label {
       font-size: 0.9rem;
       font-weight: 600;
@@ -349,7 +359,7 @@
 
             <section class="actions">
               <button type="button" class="btn btn-secondary">Cancelar</button>
-              <button type="submit" class="btn btn-primary">Salvar perfil</button>
+              <button type="submit" class="btn btn-primary" >Salvar perfil</button>
             </section>
           </form>
         </section>
@@ -385,27 +395,29 @@
           <section class="form-grid">
             <section class="field full">
               <label for="rua">Rua</label>
-                <input id="rua" type="text" value="<%= logradouro %>" />
+              <input id="rua" type="text" value="<%= logradouro %>" />
+            </section>
+
+            <section class="field">
+              <label for="bairro">Bairro</label>
+              <input id="bairro" type="text" value="<%= bairro %>" />
             </section>
 
             <section class="field">
               <label for="cidade">Cidade</label>
-                <input id="cidade" type="text" value="<%= cidade %>" />
+              <input id="cidade" type="text" value="<%= cidade %>" />
             </section>
 
             <section class="field">
               <label for="estado">Estado</label>
-              <select id="estado">
-                <option selected><%= estado %></option>
-                <option>RJ</option>
-                <option>MG</option>
-                <option>RS</option>
-              </select>
+              <input id="estado" type="text" value="<%= estado %>" maxlength="2" />
             </section>
 
             <section class="field">
               <label for="cep">CEP</label>
-              <input id="cep" type="text" value="01310-100" />
+              <input id="cep" type="text" inputmode="numeric" autocomplete="postal-code"
+                maxlength="9" placeholder="00000-000" aria-describedby="cep-status" />
+              <small id="cep-status" class="cep-status" role="status" aria-live="polite"></small>
             </section>
 
             <section class="field">
@@ -416,12 +428,82 @@
 
           <section class="actions">
             <button type="button" class="btn btn-secondary">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Salvar endereço</button>
+            <button type="submit" class="btn btn-primary" id="editarEnderecoUsuario">Salvar endereço</button>
           </section>
         </form>
       </section>
     </main>
   </main>
+  <script>
+    (() => {
+      const cepInput = document.getElementById("cep");
+      const status = document.getElementById("cep-status");
+      const addressFields = {
+        rua: document.getElementById("rua"),
+        bairro: document.getElementById("bairro"),
+        cidade: document.getElementById("cidade"),
+        estado: document.getElementById("estado"),
+      };
+      let requestController;
+
+      const updateStatus = (message, state = "") => {
+        status.textContent = message;
+        status.dataset.state = state;
+      };
+
+      cepInput.addEventListener("input", async () => {
+        const cep = cepInput.value.replace(/\D/g, "");
+        requestController?.abort();
+        requestController = undefined;
+        updateStatus("");
+
+        if (cep.length !== 8) {
+          return;
+        }
+
+        const controller = new AbortController();
+        requestController = controller;
+        updateStatus("Buscando endereço...");
+
+        try {
+          const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`, {
+            signal: controller.signal,
+          });
+
+          if (!response.ok) {
+            throw new Error(`A consulta de CEP retornou HTTP ${response.status}`);
+          }
+
+          const endereco = await response.json();
+          if (controller.signal.aborted || cepInput.value.replace(/\D/g, "") !== cep) {
+            return;
+          }
+
+          if (endereco.erro) {
+            updateStatus("CEP não encontrado. Verifique o número informado.", "error");
+            return;
+          }
+
+          addressFields.rua.value = endereco.logradouro || "";
+          addressFields.bairro.value = endereco.bairro || "";
+          addressFields.cidade.value = endereco.localidade || "";
+          addressFields.estado.value = endereco.uf || "";
+          updateStatus("Endereço localizado.");
+        } catch (error) {
+          if (error.name === "AbortError") {
+            return;
+          }
+
+          console.error("Erro ao consultar CEP:", error);
+          updateStatus("Não foi possível consultar o CEP. Tente novamente.", "error");
+        } finally {
+          if (requestController === controller) {
+            requestController = undefined;
+          }
+        }
+      });
+    })();
+  </script>
 </body>
 
 </html>

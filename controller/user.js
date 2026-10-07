@@ -66,6 +66,23 @@ const loginUsuario = async (req, res) => {
     }
 };
 
+const editarEnderecoUsuario = async (req, res) => {
+    const { logradouro, numero, complemento, bairro, cidade, estado } = req.body;
+    const userId = req.session.userId;
+
+    try {
+        const query = "UPDATE usuario SET logradouro = $1, numero = $2, complemento = $3, bairro = $4, cidade = $5, estado = $6 WHERE id = $7";
+        const values = [logradouro, numero, complemento, bairro, cidade, estado, userId];
+
+        await connection.query(query, values);
+        console.log("Endereço atualizado com sucesso!");
+        res.redirect("/profile");
+    } catch (error) {
+        console.error("Erro ao atualizar endereço:", error);
+        res.redirect("/profile");
+    }
+};
+
 
 
 module.exports = {
