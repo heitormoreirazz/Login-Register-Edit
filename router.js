@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 var salt = bcrypt.genSaltSync(12);
 var connection = require("./config/pool_conexoes");
 const flash = require('connect-flash');
+const multer = require('./models/multer');
 
 router.get("/", async function (req, res) {
     const email = req.session ? req.session.email : "";

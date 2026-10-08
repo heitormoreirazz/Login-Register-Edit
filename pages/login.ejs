@@ -12,22 +12,40 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg: #f3f6fb;
+            --card: #ffffff;
+            --primary: #2f6fed;
+            --primary-dark: #1d4fc8;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --text: #1f2937;
+            --success: #10b981;
+            --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #5f5f5f;
+            background-color: var(--bg);
         }
 
         header.nav-bar {
-            background-color: #333;
-            color: white;
-            padding: 1%;
-            text-align: center;
+            background-color: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px 22px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
         }
 
         .nav-bar a {
-            padding: 1%;
-            color: white;
-            text-type: bold;
+            padding: 2%;
+            color: var(--text);
+            font-weight: bold;
             text-decoration: none;
         }
 
@@ -39,10 +57,10 @@
         }
 
         .login-container {
-            background-color: #9c9b9b;
+            background-color: var(--primary-dark);
             padding: 40px;
             border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow);
             width: 100%;
             max-width: 400px;
         }
@@ -84,8 +102,8 @@
         button {
             width: 100%;
             padding: 12px;
-            background-color: black;
-            color: white;
+            background-color: var(--bg);
+            color: var(--text);
             border: none;
             border-radius: 5px;
             font-size: 16px;

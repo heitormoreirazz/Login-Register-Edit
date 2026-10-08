@@ -24,6 +24,7 @@
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
     "bcrypt": "^6.0.0",
+    "bootstrap-icons": "^1.13.1",
     "connect-flash": "^0.1.1",
     "dotenv": "^17.4.2",
     "ejs": "^6.0.1",
@@ -32,6 +33,7 @@
     "flash": "^1.1.0",
     "joi": "^18.2.3",
     "mongoose": "^9.9.2",
+    "multer": "^2.4.0",
     "pg": "^8.23.0"
   },
   "devDependencies": {
