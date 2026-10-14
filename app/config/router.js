@@ -1,12 +1,11 @@
 var express = require("express");
 var path = require("path");
-var user = require("./controller/user");
+var user = require("../controller/user");
 var router = express.Router();
 const bcrypt = require("bcrypt");
 var salt = bcrypt.genSaltSync(12);
-var connection = require("./config/pool_conexoes");
+var connection = require("./pool_conexoes");
 const flash = require('connect-flash');
-const multer = require('./models/multer');
 
 router.get("/", async function (req, res) {
     const email = req.session ? req.session.email : "";
@@ -24,7 +23,7 @@ router.get("/register", async function (req, res) {
 });
 
 router.get("/controller/cepAPI.js", function (req, res) {
-    res.sendFile(path.join(__dirname, "controller", "cepAPI.js"));
+    res.sendFile(path.join(__dirname, "..", "controller", "cepAPI.js"));
 });
 
 router.get("/profile", async function (req, res) {

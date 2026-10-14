@@ -3,7 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const dotenv = require('dotenv');
 const path = require('path');
-const router = require('./router');
+const router = require('./app/config/router');
 
 dotenv.config();
 
@@ -12,10 +12,11 @@ const host = process.env.HOST || '0.0.0.0';
 const port = process.env.PORT || 3000;
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname));
+app.set('views', path.join(__dirname, 'app'));
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
+app.use('/sources', express.static(path.join(__dirname, 'app', 'sources')));
 app.use(session({
   secret: 'login-register-edit-secret',
   resave: false,

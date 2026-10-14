@@ -1,0 +1,61 @@
+:root {
+    --bg: #f3f6fb;
+    --card: #ffffff;
+    --primary: #7cb9ffde;
+    --primary-dark: #1d4fc8;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --text: #1f2937;
+    --success: #10b981;
+    --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    background-color: var(--primary);
+    box-shadow: var(--shadow);
+    border-bottom: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 20px;
+    color: var(--text);
+    text-align: center;
+}
+
+main {
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    gap: 120px;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-box-login,
+.card-box-register {
+    diplay: flex;
+    justify-content: space-between;
+    width: auto;
+    height: 250px;
+    gap: 150px;
+    background-color: var(--bg);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
