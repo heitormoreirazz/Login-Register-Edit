@@ -47,6 +47,7 @@ const loginUsuario = async (req, res) => {
             res.redirect("/login");
             return;
         }
+        
         req.session.nome = usuario.nome;
         req.session.sobrenome = usuario.sobrenome;
         req.session.logradouro = usuario.logradouro;
@@ -58,6 +59,7 @@ const loginUsuario = async (req, res) => {
         req.session.estado = usuario.estado;
         req.session.userId = usuario.id;
         req.session.email = usuario.email;
+        req.session.avatar_url = usuario.avatar_url;  // ← ADICIONE ISTO
 
         console.log("Login bem-sucedido!");
         res.redirect("/profile");
@@ -121,11 +123,31 @@ const editarInfoUsuario = async (req, res) => {
     }
 };
 
+const logoutUsuario = (req, res) => {
+    // Destruir a sessão
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Erro ao destruir sessão:', err);
+            return res.status(500).json({
+                success: false,
+                error: 'Erro ao fazer logout'
+            });
+        }
+
+        // Limpar cookies
+        res.clearCookie('connect.sid'); // Nome padrão do cookie de sessão
+        console.log('Usuário fez logout com sucesso');
+        // Redirecionar para login
+        res.redirect('/login');
+    });
+};
+
 
 
 module.exports = {
     registrarUsu,
     loginUsuario,
     editarEnderecoUsuario,
-    editarInfoUsuario
+    editarInfoUsuario,
+    logoutUsuario
 };

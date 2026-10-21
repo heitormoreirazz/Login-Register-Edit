@@ -22,7 +22,7 @@
   "homepage": "https://github.com/Astr0ns/Login-Register-Edit#readme",
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
-    "@supabase/supabase-js": "^2.112.3",
+    "@supabase/supabase-js": "^2.118.0",
     "bcrypt": "^6.0.0",
     "bootstrap-icons": "^1.13.1",
     "connect-flash": "^0.1.1",

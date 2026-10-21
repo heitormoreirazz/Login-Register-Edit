@@ -130,6 +130,8 @@ async function uploadAvatar(file) {
     const formData = new FormData();
     formData.append('file', file);
 
+    console.log('Enviando arquivo:', file.name);
+
     // Enviar para seu servidor/Supabase
     const response = await fetch('/upload-avatar', {
       method: 'POST',
@@ -141,10 +143,20 @@ async function uploadAvatar(file) {
     }
 
     const data = await response.json();
-    console.log('Avatar enviado:', data);
+    console.log('Resposta do servidor:', data);
 
-    // Exibir a imagem
-    displayAvatar(previewDataUrl);
+    // ✅ USAR A URL PÚBLICA DO SUPABASE (não base64)
+    if (data.url) {
+      avatarImg.src = data.url;  // ← URL PÚBLICA
+      avatarImg.classList.add('show');
+      avatarIcon.classList.add('hide');
+      console.log('Avatar exibido com URL pública:', data.url);
+    } else {
+      // Se não tiver URL, usar base64 como fallback
+      displayAvatar(previewDataUrl);
+      console.log('Usando base64 como fallback');
+    }
+
     closeConfirmModal();
     showSuccess('✅ Avatar atualizado com sucesso!');
 
@@ -229,6 +241,53 @@ avatarElement.addEventListener('drop', (e) => {
     handleFileSelect(file);
   }
 });
+
+// ===== SALVAR AVATAR MANUALMENTE =====
+
+const saveAvatarBtn = document.getElementById('saveAvatarBtn');
+
+if (saveAvatarBtn) {
+  saveAvatarBtn.addEventListener('click', async function() {
+    const avatarImage = document.querySelector('.avatar-img');
+    
+    // Verificar se tem imagem
+    if (!avatarImage.src || avatarImage.src === '') {
+      alert('❌ Nenhuma imagem selecionada');
+      return;
+    }
+
+    // Verificar se é base64 (imagem temporária)
+    if (avatarImage.src.startsWith('data:image')) {
+      alert('❌ Você precisa fazer upload primeiro!');
+      return;
+    }
+
+    try {
+      // Enviar URL para o servidor salvar no banco
+      const response = await fetch('/save-avatar-url', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          avatar_url: avatarImage.src
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert('✅ Avatar salvo com sucesso!');
+        console.log('Avatar salvo:', data.avatar_url);
+      } else {
+        alert('❌ Erro ao salvar: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('❌ Erro ao salvar avatar');
+    }
+  });
+}
 
 // ===== EXPORTAR FUNÇÕES (se usar módulos) =====
 // export { uploadAvatar, removeAvatar, handleFileSelect };
