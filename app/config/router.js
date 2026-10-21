@@ -51,13 +51,18 @@ router.get("/controller/cepAPI.js", function (req, res) {
     res.sendFile(path.join(__dirname, "..", "controller", "cepAPI.js"));
 });
 
+// ===== ROTA DO PERFIL - CORRIGIDA =====
 router.get("/profile", async function (req, res) {
     const session = req.session || {};
     const userId = session.userId;
 
     let avatar_url = session.avatar_url || "";
 
-    // ✅ BUSCAR A URL DO BANCO
+    if (!userId) {
+        return res.redirect("/login");
+    }
+
+    // ✅ BUSCAR A URL DO AVATAR NO BANCO DE DADOS
     if (userId) {
         try {
             const query = "SELECT avatar_url FROM usuario WHERE id = $1";
@@ -65,14 +70,17 @@ router.get("/profile", async function (req, res) {
             
             if (result.rows.length > 0 && result.rows[0].avatar_url) {
                 avatar_url = result.rows[0].avatar_url;
-                console.log('Avatar URL do banco:', avatar_url);
+                console.log('✅ Avatar URL carregado do banco:', avatar_url);
             }
         } catch (error) {
-            console.error('Erro ao buscar avatar:', error);
+            console.error('❌ Erro ao buscar avatar:', error);
         }
     }
 
     res.render("pages/profile", {
+
+        
+        
         nome: session.nome || "",
         sobrenome: session.sobrenome || "",
         email: session.email || "",
@@ -86,11 +94,11 @@ router.get("/profile", async function (req, res) {
         celular: session.celular || "",
         CPF: session.CPF || "",
         bio: session.bio || "",
-        avatar_url: avatar_url  // ← USA A URL DO BANCO
+        avatar_url: avatar_url  // ← PASSA A URL PARA O TEMPLATE
     });
 });
 
-// ===== NOVO ENDPOINT PARA UPLOAD DE AVATAR =====
+// ===== ENDPOINT PARA UPLOAD DE AVATAR =====
 router.post("/upload-avatar", upload.single('file'), async function (req, res) {
     try {
         // Verificar se arquivo foi enviado
@@ -113,6 +121,8 @@ router.post("/upload-avatar", upload.single('file'), async function (req, res) {
         const fileName = `avatar-${req.session.userId}-${Date.now()}.jpg`;
         const bucket = 'images';
 
+        console.log('📤 Fazendo upload para Supabase:', fileName);
+
         // Fazer upload para o Supabase Storage
         const { data, error } = await supabase.storage
             .from(bucket)
@@ -122,7 +132,7 @@ router.post("/upload-avatar", upload.single('file'), async function (req, res) {
             });
 
         if (error) {
-            console.error('Erro Supabase:', error);
+            console.error('❌ Erro Supabase:', error);
             return res.status(500).json({
                 success: false,
                 error: 'Erro ao fazer upload: ' + error.message
@@ -134,87 +144,40 @@ router.post("/upload-avatar", upload.single('file'), async function (req, res) {
             .from(bucket)
             .getPublicUrl(fileName);
 
+        const publicUrl = publicData.publicUrl;
+        console.log('✅ URL pública gerada:', publicUrl);
+
         // Salvar URL do avatar no banco de dados
         const updateQuery = 'UPDATE usuario SET avatar_url = $1 WHERE id = $2';
 
         // ✅ USAR PROMISE PARA ESPERAR O RESULTADO
         await new Promise((resolve, reject) => {
-            connection.query(updateQuery, [publicData.publicUrl, req.session.userId], (err) => {
+            connection.query(updateQuery, [publicUrl, req.session.userId], (err) => {
                 if (err) {
-                    console.error('Erro ao atualizar banco:', err);
+                    console.error('❌ Erro ao atualizar banco:', err);
                     reject(err);
                 } else {
                     // Atualizar sessão APÓS salvar no banco
-                    req.session.avatar_url = publicData.publicUrl;
+                    req.session.avatar_url = publicUrl;
+                    console.log('✅ Avatar salvo no banco de dados');
                     resolve();
                 }
             });
         });
 
-        // Retornar sucesso
+        // Retornar sucesso com a URL pública
         res.json({
             success: true,
             message: 'Avatar atualizado com sucesso',
-            url: publicData.publicUrl,
+            url: publicUrl,
             fileName: fileName
         });
 
     } catch (error) {
-        console.error('Erro no upload:', error);
+        console.error('❌ Erro no upload:', error);
         res.status(500).json({
             success: false,
             error: 'Erro interno do servidor: ' + error.message
-        });
-    }
-});
-
-router.post("/save-avatar-url", async function (req, res) {
-    try {
-        const { avatar_url } = req.body;
-        const userId = req.session?.userId;
-
-        if (!userId) {
-            return res.status(401).json({
-                success: false,
-                error: 'Usuário não autenticado'
-            });
-        }
-
-        if (!avatar_url) {
-            return res.status(400).json({
-                success: false,
-                error: 'URL do avatar não fornecida'
-            });
-        }
-
-        // Salvar no banco
-        const updateQuery = 'UPDATE usuario SET avatar_url = $1 WHERE id = $2';
-
-        await new Promise((resolve, reject) => {
-            connection.query(updateQuery, [avatar_url, userId], (err) => {
-                if (err) {
-                    console.error('Erro ao atualizar banco:', err);
-                    reject(err);
-                } else {
-                    // Atualizar sessão
-                    req.session.avatar_url = avatar_url;
-                    console.log('Avatar salvo no banco:', avatar_url);
-                    resolve();
-                }
-            });
-        });
-
-        res.json({
-            success: true,
-            message: 'Avatar salvo com sucesso',
-            avatar_url: avatar_url
-        });
-
-    } catch (error) {
-        console.error('Erro ao salvar avatar:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Erro ao salvar avatar: ' + error.message
         });
     }
 });

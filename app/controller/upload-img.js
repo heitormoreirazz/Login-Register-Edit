@@ -86,13 +86,14 @@ function closeConfirmModal() {
 }
 
 /**
- * Exibe a imagem no avatar
- * @param {string} dataUrl - URL da imagem em base64
+ * Exibe a imagem no avatar com URL pública
+ * @param {string} url - URL pública da imagem (Supabase)
  */
-function displayAvatar(dataUrl) {
-  avatarImg.src = dataUrl;
+function displayAvatarWithUrl(url) {
+  avatarImg.src = url;
   avatarImg.classList.add('show');
   avatarIcon.classList.add('hide');
+  console.log('✅ Avatar exibido com URL:', url);
 }
 
 /**
@@ -130,9 +131,9 @@ async function uploadAvatar(file) {
     const formData = new FormData();
     formData.append('file', file);
 
-    console.log('Enviando arquivo:', file.name);
+    console.log('📤 Enviando arquivo:', file.name);
 
-    // Enviar para seu servidor/Supabase
+    // Enviar para o servidor
     const response = await fetch('/upload-avatar', {
       method: 'POST',
       body: formData
@@ -143,27 +144,23 @@ async function uploadAvatar(file) {
     }
 
     const data = await response.json();
-    console.log('Resposta do servidor:', data);
+    console.log('✅ Resposta do servidor:', data);
 
     // ✅ USAR A URL PÚBLICA DO SUPABASE (não base64)
-    if (data.url) {
-      avatarImg.src = data.url;  // ← URL PÚBLICA
-      avatarImg.classList.add('show');
-      avatarIcon.classList.add('hide');
-      console.log('Avatar exibido com URL pública:', data.url);
+    if (data.success && data.url) {
+      // Exibir com URL pública
+      displayAvatarWithUrl(data.url);
+      closeConfirmModal();
+      showSuccess('✅ Avatar atualizado com sucesso!');
+      console.log('🎉 Avatar salvo e exibido:', data.url);
     } else {
-      // Se não tiver URL, usar base64 como fallback
-      displayAvatar(previewDataUrl);
-      console.log('Usando base64 como fallback');
+      throw new Error('URL não retornada do servidor');
     }
-
-    closeConfirmModal();
-    showSuccess('✅ Avatar atualizado com sucesso!');
 
     return data;
   } catch (error) {
     showError('❌ Erro ao enviar avatar');
-    console.error(error);
+    console.error('❌ Erro:', error);
   } finally {
     hideLoading();
   }
@@ -191,100 +188,65 @@ function handleFileSelect(file) {
 // ===== EVENT LISTENERS =====
 
 // Clique no avatar para abrir seletor de arquivo
-avatarElement.addEventListener('click', () => {
-  avatarInput.click();
-});
+if (avatarElement) {
+  avatarElement.addEventListener('click', () => {
+    avatarInput.click();
+  });
+}
 
 // Seleção de arquivo
-avatarInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    handleFileSelect(file);
-  }
-});
+if (avatarInput) {
+  avatarInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      handleFileSelect(file);
+    }
+  });
+}
 
 // Botão confirmar no modal
-modalBtnConfirm.addEventListener('click', () => {
-  if (selectedFile) {
-    uploadAvatar(selectedFile);
-  }
-});
+if (modalBtnConfirm) {
+  modalBtnConfirm.addEventListener('click', () => {
+    if (selectedFile) {
+      uploadAvatar(selectedFile);
+    }
+  });
+}
 
 // Botão cancelar no modal
-modalBtnCancel.addEventListener('click', () => {
-  closeConfirmModal();
-});
+if (modalBtnCancel) {
+  modalBtnCancel.addEventListener('click', () => {
+    closeConfirmModal();
+  });
+}
 
 // Fechar modal ao clicar fora
-modal.addEventListener('click', (e) => {
-  if (e.target === modal) {
-    closeConfirmModal();
-  }
-});
+if (modal) {
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeConfirmModal();
+    }
+  });
+}
 
 // Drag and drop
-avatarElement.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  avatarElement.style.opacity = '0.7';
-});
+if (avatarElement) {
+  avatarElement.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    avatarElement.style.opacity = '0.7';
+  });
 
-avatarElement.addEventListener('dragleave', () => {
-  avatarElement.style.opacity = '1';
-});
+  avatarElement.addEventListener('dragleave', () => {
+    avatarElement.style.opacity = '1';
+  });
 
-avatarElement.addEventListener('drop', (e) => {
-  e.preventDefault();
-  avatarElement.style.opacity = '1';
+  avatarElement.addEventListener('drop', (e) => {
+    e.preventDefault();
+    avatarElement.style.opacity = '1';
 
-  const file = e.dataTransfer.files[0];
-  if (file) {
-    handleFileSelect(file);
-  }
-});
-
-// ===== SALVAR AVATAR MANUALMENTE =====
-
-const saveAvatarBtn = document.getElementById('saveAvatarBtn');
-
-if (saveAvatarBtn) {
-  saveAvatarBtn.addEventListener('click', async function() {
-    const avatarImage = document.querySelector('.avatar-img');
-    
-    // Verificar se tem imagem
-    if (!avatarImage.src || avatarImage.src === '') {
-      alert('❌ Nenhuma imagem selecionada');
-      return;
-    }
-
-    // Verificar se é base64 (imagem temporária)
-    if (avatarImage.src.startsWith('data:image')) {
-      alert('❌ Você precisa fazer upload primeiro!');
-      return;
-    }
-
-    try {
-      // Enviar URL para o servidor salvar no banco
-      const response = await fetch('/save-avatar-url', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          avatar_url: avatarImage.src
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        alert('✅ Avatar salvo com sucesso!');
-        console.log('Avatar salvo:', data.avatar_url);
-      } else {
-        alert('❌ Erro ao salvar: ' + data.error);
-      }
-    } catch (error) {
-      console.error('Erro:', error);
-      alert('❌ Erro ao salvar avatar');
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      handleFileSelect(file);
     }
   });
 }
