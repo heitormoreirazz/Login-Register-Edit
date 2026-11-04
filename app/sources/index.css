@@ -47,7 +47,7 @@ main {
 
 .card-box-login,
 .card-box-register {
-    diplay: flex;
+    display: flex;
     justify-content: space-between;
     width: auto;
     height: 250px;
