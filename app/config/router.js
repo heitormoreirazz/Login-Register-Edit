@@ -43,6 +43,7 @@ router.get("/", async function (req, res) {
 
 router.get("/register", async function (req, res) {
     res.render("pages/register", {
+        erro: "",
         valores: { nome: "", sobrenome: "", email: "", senha: "" },
     });
 });

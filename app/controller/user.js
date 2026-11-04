@@ -1,23 +1,71 @@
 var express = require("express");
 var router = express.Router();
 const bcrypt = require("bcrypt");
+const { spawn } = require("child_process");
+const path = require("path");
 var salt = bcrypt.genSaltSync(12);
 var connection = require("../config/pool_conexoes");
 const flash = require('connect-flash');
 
-const registrarUsuario = async (nome, sobrenome, email, senha) => {
+const validarCadastro = (dados) => new Promise((resolve, reject) => {
+    const processo = spawn("python3", [path.join(__dirname, "validar_cadastro.py")]);
+    let saida = "";
+    let erroSaida = "";
+
+    processo.stdout.setEncoding("utf8");
+    processo.stderr.setEncoding("utf8");
+    processo.stdout.on("data", (chunk) => { saida += chunk; });
+    processo.stderr.on("data", (chunk) => { erroSaida += chunk; });
+    processo.on("error", reject);
+    processo.on("close", (codigo) => {
+        if (codigo !== 0) {
+            reject(new Error(erroSaida || "O validador Python encerrou com erro."));
+            return;
+        }
+
+        try {
+            resolve(JSON.parse(saida));
+        } catch (error) {
+            reject(new Error(`Resposta inválida do validador Python: ${error.message}`));
+        }
+    });
+
+    processo.stdin.end(JSON.stringify(dados));
+});
+
+const registrarUsuario = async (nome, sobrenome, email, senha, tipo_usuario) => {
     const senhaHash = await bcrypt.hash(senha, salt);
-    const query = "INSERT INTO usuario (nome, sobrenome, email, senha) VALUES ($1, $2, $3, $4)";
-    const values = [nome, sobrenome, email, senhaHash];
+    const query = "INSERT INTO usuario (nome, sobrenome, email, senha, tipo_usuario) VALUES ($1, $2, $3, $4, $5)";
+    const values = [nome, sobrenome, email, senhaHash, tipo_usuario];
 
     const result = await connection.query(query, values);
     return result;
 };
 
 const registrarUsu = async (req, res) => {
-    const { nome, sobrenome, email, senha } = req.body;
+    const { nome, sobrenome, email, senha, confirmarSenha } = req.body;
+    const emailCadastro = typeof email === "string" ? email.trim() : email;
+
+    let validacao;
     try {
-        await registrarUsuario(nome, sobrenome, email, senha);
+        validacao = await validarCadastro({ email: emailCadastro, senha, confirmarSenha });
+    } catch (error) {
+        console.error("Erro ao validar cadastro:", error);
+        return res.status(500).render("pages/register", {
+            erro: "Não foi possível validar seus dados. Tente novamente.",
+            valores: { nome, sobrenome, email, senha: "" },
+        });
+    }
+
+    if (!validacao.valido) {
+        return res.status(400).render("pages/register", {
+            erro: validacao.erros.join(" "),
+            valores: { nome, sobrenome, email, senha: "" },
+        });
+    }
+
+    try {
+        await registrarUsuario(nome, sobrenome, emailCadastro, senha, "default_user");
         console.log('Registro bem-sucedido!');
         res.redirect('/login');
     } catch (error) {
@@ -59,7 +107,8 @@ const loginUsuario = async (req, res) => {
         req.session.estado = usuario.estado;
         req.session.userId = usuario.id;
         req.session.email = usuario.email;
-        req.session.avatar_url = usuario.avatar_url;  // ← ADICIONE ISTO
+        req.session.avatar_url = usuario.avatar_url;
+        req.session.bio = usuario.bio;
 
         console.log("Login bem-sucedido!");
         res.redirect("/profile");
@@ -141,7 +190,6 @@ const logoutUsuario = (req, res) => {
         res.redirect('/login');
     });
 };
-
 
 
 module.exports = {

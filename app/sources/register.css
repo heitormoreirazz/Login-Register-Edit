@@ -1,0 +1,99 @@
+
+  :root {
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --primary: #2f6fed;
+      --primary-dark: #1d4fc8;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --text: #1f2937;
+      --success: #10b981;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  main {
+    padding: 20px;
+    background-color: var(--bg);
+  }
+
+  .nav-bar a {
+            padding: 1%;
+            color: white;
+            text-type: bold;
+            text-decoration: none;
+        }
+
+  header.nav-bar {
+    background-color: var(--primary);
+    color: var(--text);
+    padding: 1%;
+    text-align: center;
+  }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .form-container {
+    width: auto;
+    background-color: var(--card);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+  }
+
+  label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  input {
+    margin-bottom: 15px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    width: 100%;
+    height: 3vh;
+  }
+
+  button {
+    padding: 10px;
+    background-color: #1f1f1f;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #333;
+  }
+
+
+p {
+    color: red;
+    font-size: 16px;
+    padding: 20px;
+}
+
+section.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 5px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
